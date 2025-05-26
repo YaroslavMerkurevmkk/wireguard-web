@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from core.utils import get_default_interface
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -87,6 +88,8 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SERVER_IP, SERVER_INTERFACE = get_default_interface()
 
 WG_DIR = config.get("WIREGUARD_DIR", None)
 WG_DIR = WG_DIR if WG_DIR else None
