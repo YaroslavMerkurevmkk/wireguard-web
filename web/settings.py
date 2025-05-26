@@ -94,5 +94,5 @@ SERVER_IP, SERVER_INTERFACE = get_default_interface()
 WG_DIR = config.get("WIREGUARD_DIR", None)
 WG_DIR = WG_DIR if WG_DIR else None
 
-WG_PORT = config.get("WIREGUARD_DIR", None)
+WG_PORT = config.get("WIREGUARD_PORT", None)
 WG_PORT = WG_PORT if WG_PORT else None
