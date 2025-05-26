@@ -118,7 +118,7 @@ LOGGING = {
         'daily_file': {
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': LOG_DIR,
+            'filename': str(LOG_DIR / 'django.log'),
             'when': 'midnight',
             'backupCount': 15,
             'formatter': 'verbose',
