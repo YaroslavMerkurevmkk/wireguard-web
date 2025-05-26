@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 with open(BASE_DIR / "config.json", "r", encoding="utf-8") as conf_file:
     config = json.load(conf_file)
@@ -11,7 +11,7 @@ SECRET_KEY = config.get("SECRET_KEY")
 
 DEBUG = config.get("DEBUG", False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config.get("ALLOWED_HOSTS", [])
 
 
 INSTALLED_APPS = [
