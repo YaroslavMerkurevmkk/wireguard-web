@@ -1,14 +1,35 @@
-# Manage wireguard clients from WEB
+# Manage WireGuard Clients via Web Interface
 
-## Installation
-Python3.x >= 3.11
 
-Cloning repository to user's home directory
+## 📦 Installation
 
-if python3.11 and python3.11-venv is installed in your system use:
+Install required packages (for Debian-based systems):
 
-```bash ./bin/setup.sh```
+```bash
+apt update
+apt install wireguard wireguard-tools
+```
 
+Requires: Python 3.11 or higher
+
+Clone the repository into your home directory.
+
+If `python3.11` and `python3.11-venv` are installed:
+```bash 
+./bin/setup.sh
+```
+
+Else:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -U pip
+pip install -r requirements.txt
+```
+
+
+## ⚙️ Configuration
 
 `config.json` example:
 
@@ -24,36 +45,86 @@ if python3.11 and python3.11-venv is installed in your system use:
 }
 ```
 
-## Systemd Unit
-! Change `user` and `PATH/TO/REPO`
+
+## 🚀 Running the Django App
+Run the following commands:
+
+`python manage.py makemigrations`
+
+`python manage.py migrate`
+
+`python manage.py createsuperuser`
+
+`python manage.py collectstatic`
+
+
+## 🛠️ systemd Unit Example
+
+Edit the unit file with the correct username and path:
 
 ```
 [Unit]
-Description=Wireguard client manager
+Description=WireGuard Client Manager
 After=network.target
 
 [Service]
-User=user
-Group=user
-WorkingDirectory=PATH/TO/REPO
-ExecStart=PATH/TO/REPO/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:2222 web.wsgi
+User=your_username
+Group=your_username
+WorkingDirectory=/home/your_username/wireguard-web
+ExecStart=/home/your_username/wireguard-web/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:2222 web.wsgi
 
 [Install]
 WantedBy=multi-user.target
 ```
 
-`sudo systemctl start unit_name.service` - start unit
-`sudo systemctl enable unit_name.service` - enable autoloading
+To start and enable the service:
 
-## Nginx
+`sudo systemctl start wireguard-web.service`
 
-## Additions
-Need permissions to staticfiles for www-data
+`sudo systemctl enable wireguard-web.service`
 
-`chmod o+x /home/user`
 
-Using sudoers, acl (setfacl)
+## 🌐 Nginx Configuration
 
-`setfacl -b /etc/wireguard`  (reset acl rules)
+Secure your app using Let's Encrypt and restrict admin access.
 
-`setfacl -m u:tstu:rwx /etc/wireguard`  (set permission for user)
+```
+server {
+    listen 10000 ssl;
+    server_name example.com;
+
+    ssl_certificate PATH/fullchain.pem; # managed by Certbot
+    ssl_certificate_key PAHT/privkey.pem; # managed by Certbot
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers 'HIGH:!aNULL:!MD5';
+
+    location /admin/ {
+        allow 10.0.0.2;       # allow trusted IP only
+        deny all;
+        proxy_pass http://127.0.0.1:2222;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /static/ {
+        alias /home/your_username/wireguard-web/staticfiles/;
+        autoindex off;
+        expires 30d;
+        add_header Cache-Control "public, max-age=2592000";
+    }
+}
+```
+
+## 📁 File Permissions
+Grant access to static files and WireGuard config:
+
+`chmod o+x /home/your_username`
+
+Use ACL to give Django access to /etc/wireguard:
+
+`setfacl -b /etc/wireguard` # Reset ACL
+
+`setfacl -m u:your_username:rwx /etc/wireguard`
