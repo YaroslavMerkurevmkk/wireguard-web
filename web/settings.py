@@ -8,11 +8,10 @@ with open(BASE_DIR / "config.json", "r", encoding="utf-8") as conf_file:
     config = json.load(conf_file)
 
 SECRET_KEY = config.get("SECRET_KEY")
-
 DEBUG = config.get("DEBUG", False)
 
 ALLOWED_HOSTS = config.get("ALLOWED_HOSTS", [])
-
+CSRF_TRUSTED_ORIGINS = config.get("CSRF_TRUSTED_ORIGINS", [])
 
 INSTALLED_APPS = [
     'wireguard.apps.WireguardConfig',
