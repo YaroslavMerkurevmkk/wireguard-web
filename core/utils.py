@@ -8,6 +8,7 @@ from typing import Callable, Any, Optional, Tuple
 import psutil
 from nacl.public import PrivateKey
 
+logger = logging.getLogger("wg-manager")
 
 def terminal_wrapper(func: Callable) -> Callable:
     @wraps(func)
@@ -15,7 +16,7 @@ def terminal_wrapper(func: Callable) -> Callable:
         try:
             return func(*args, **kwargs)
         except subprocess.CalledProcessError:
-            logging.exception(f"[-] Fail processing function: {func.__name__}")
+            logger.exception(f"[-] Fail processing function: {func.__name__}")
             return None
     return wrapper
 

@@ -11,6 +11,8 @@ from core.utils import generate_wg_keys, terminal_wrapper
 from wireguard.models import WgClient
 
 
+logger = logging.getLogger("wg-manager")
+
 class Wireguard:
     _private_key: str = None
     _pub_key: str = None
@@ -47,7 +49,7 @@ class Wireguard:
                                    settings.SERVER_INTERFACE, clients_conf)
         with open(self._path / "wg1.conf", "w", encoding="utf-8") as file:
             file.write(conf_data)
-        logging.info("[+] Saved wireguard config")
+        logger.info("[+] Saved wireguard config")
         self.reload()
 
     def _save_keys(self) -> None:
@@ -56,27 +58,27 @@ class Wireguard:
             file.write(self._private_key)
         with open(self._path / "publickey", "w", encoding="utf-8") as file:
             file.write(self._pub_key)
-        logging.info("[+] Saved server keys")
+        logger.info("[+] Saved server keys")
 
     @terminal_wrapper
     def restart(self) -> None:
         subprocess.run(["sudo", "/bin/systemctl", "restart", self._name], check=True)
-        logging.info(f"[+] Service {self._name} was restarted")
+        logger.info(f"[+] Service {self._name} was restarted")
 
     @terminal_wrapper
     def start(self) -> None:
         subprocess.run(["sudo", "/bin/systemctl", "start", self._name], check=True)
-        logging.info(f"[+] Service {self._name} was started")
+        logger.info(f"[+] Service {self._name} was started")
 
     @terminal_wrapper
     def stop(self) -> None:
         subprocess.run(["sudo", "/bin/systemctl", "stop", self._name], check=True)
-        logging.info(f"[+] Service {self._name} was stopped")
+        logger.info(f"[+] Service {self._name} was stopped")
 
     @terminal_wrapper
     def reload(self) -> None:
         subprocess.run(["sudo", "/bin/systemctl", "reload", self._name], check=True)
-        logging.info(f"[+] Service {self._name} was reloaded")
+        logger.info(f"[+] Service {self._name} was reloaded")
 
     @property
     def public_key(self) -> str:

@@ -135,7 +135,7 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
-        'site_app': {
+        'wg-manager': {
             'handlers': ['daily_file'],
             'level': 'DEBUG',
             'propagate': False,
