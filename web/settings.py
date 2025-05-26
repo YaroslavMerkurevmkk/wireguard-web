@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 
 from core.utils import get_default_interface
@@ -96,3 +97,48 @@ WG_DIR = WG_DIR if WG_DIR else None
 
 WG_PORT = config.get("WIREGUARD_PORT", None)
 WG_PORT = WG_PORT if WG_PORT else None
+
+LOG_DIR = BASE_DIR / config.get("LOG_DIR", "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname}: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'daily_file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': LOG_DIR,
+            'when': 'midnight',
+            'backupCount': 15,
+            'formatter': 'verbose',
+            'encoding': 'utf-8',
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['daily_file', 'console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'site_app': {
+            'handlers': ['daily_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
