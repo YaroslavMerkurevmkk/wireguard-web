@@ -1,0 +1,12 @@
+# IDEA
+__pycache__
+.idea
+
+# Environment
+venv
+.env
+
+# Project files
+config.json
+*.db
+*.sqlite3
