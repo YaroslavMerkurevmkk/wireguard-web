@@ -31,7 +31,7 @@ class WgClientAdmin(admin.ModelAdmin):
         obj.public_key = public_key
         obj.set_address()
         super().save_model(request, obj, form, change)
-        # self._reload_wg()
+        self._reload_wg()
 
     def download_configs(self, request: HttpRequest, queryset: QuerySet) -> Optional[HttpResponse]:
         if queryset.count() == 0:
