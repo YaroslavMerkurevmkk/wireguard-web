@@ -21,15 +21,17 @@ class WgClientAdmin(admin.ModelAdmin):
     list_display_links = ("comment",)
     search_fields = ("id", "comment", "address")
     ordering = ("id", "comment", "address")
-    fields = ("comment", "address")
+    fields = ("comment",)
     actions = ["download_configs", "delete_clients"]
 
     def save_model(self, request: HttpRequest, obj: WgClient, form: ModelForm, change: bool) -> None:
         private_key, public_key = generate_wg_keys()
+
         obj.private_key = private_key
         obj.public_key = public_key
+        obj.set_address()
         super().save_model(request, obj, form, change)
-        self._reload_wg()
+        # self._reload_wg()
 
     def download_configs(self, request: HttpRequest, queryset: QuerySet) -> Optional[HttpResponse]:
         if queryset.count() == 0:
